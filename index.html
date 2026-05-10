@@ -153,17 +153,17 @@ async function resetPool() {
   await client
     .from('role_pool')
     .update({ count: 1 })
-    .eq('role', 'tank');
+    .eq('role', '坦克');
 
   await client
     .from('role_pool')
     .update({ count: 1 })
-    .eq('role', 'healer');
+    .eq('role', '補師');
 
   await client
     .from('role_pool')
     .update({ count: 3 })
-    .eq('role', 'dps');
+    .eq('role', '輸出');
 
   document.getElementById("result").innerHTML =
     "✨ 定位池已重置 ✨";
