@@ -57,6 +57,11 @@
   </div>
 
   <button onclick="drawRole()">抽選</button>
+<br><br>
+
+<button onclick="resetPool()">
+  重置定位池
+</button>
 
   <div class="result" id="result"></div>
 
@@ -140,6 +145,28 @@
         }
       )
       .subscribe();
+async function resetPool() {
+
+  await client
+    .from('role_pool')
+    .update({ count: 1 })
+    .eq('role', 'tank');
+
+  await client
+    .from('role_pool')
+    .update({ count: 1 })
+    .eq('role', 'healer');
+
+  await client
+    .from('role_pool')
+    .update({ count: 3 })
+    .eq('role', 'dps');
+
+  document.getElementById("result").innerHTML =
+    "✨ 定位池已重置 ✨";
+
+  loadPool();
+}
 
   </script>
 
