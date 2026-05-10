@@ -126,6 +126,21 @@
 
     loadPool();
 
+    client
+      .channel('role_pool_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'role_pool'
+        },
+        () => {
+          loadPool();
+        }
+      )
+      .subscribe();
+
   </script>
 
 </body>
