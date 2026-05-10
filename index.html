@@ -76,7 +76,8 @@
 
       const { data } = await client
         .from('role_pool')
-        .select('*');
+        .select('*')
+	.order('id');
 
       let html = "";
 
@@ -93,7 +94,9 @@
 
       const { data } = await client
         .from('role_pool')
-        .select('*');
+        .select('*')
+	.order('id');
+
 
       let pool = [];
 
