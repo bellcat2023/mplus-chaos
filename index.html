@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>定位抽選</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+    body {
+      background: #1e1e1e;
+      color: white;
+      font-family: "Microsoft JhengHei";
+      text-align: center;
+      padding-top: 80px;
+    }
+
+    h1 {
+      font-size: 48px;
+      margin-bottom: 40px;
+    }
+
+    .pool {
+      font-size: 28px;
+      margin-bottom: 40px;
+      line-height: 1.8;
+    }
+
+    button {
+      font-size: 32px;
+      padding: 15px 50px;
+      border: none;
+      border-radius: 16px;
+      background: #6c5ce7;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #8577ff;
+    }
+
+    .result {
+      margin-top: 50px;
+      font-size: 64px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>🎲 定位抽選 🎲</h1>
+
+  <div class="pool" id="pool">
+    載入中...
+  </div>
+
+  <button onclick="drawRole()">抽選</button>
+
+  <div class="result" id="result"></div>
+
+  <script>
+
+    const SUPABASE_URL = "https://vexskqyncyphhycnuwjx.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZleHNrcXluY3lwaGh5Y251d2p4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg0MzI2ODcsImV4cCI6MjA5NDAwODY4N30.R-jUgpYcR8FroO7Rw_LVMVIQ9HETdHeqPy8Cyp9ywIk";
+
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function loadPool() {
+
+      const { data } = await client
+        .from('role_pool')
+        .select('*');
+
+      let html = "";
+
+      data.forEach(item => {
+        html += `
+          ${item.role}：${item.count}<br>
+        `;
+      });
+
+      document.getElementById("pool").innerHTML = html;
+    }
+
+    async function drawRole() {
+
+      const { data } = await client
+        .from('role_pool')
+        .select('*');
+
+      let pool = [];
+
+      data.forEach(item => {
+
+        for (let i = 0; i < item.count; i++) {
+          pool.push(item.role);
+        }
+
+      });
+
+      if (pool.length === 0) {
+        alert("定位池已抽完！");
+        return;
+      }
+
+      const selected =
+        pool[Math.floor(Math.random() * pool.length)];
+
+      const roleData =
+        data.find(item => item.role === selected);
+
+      await client
+        .from('role_pool')
+        .update({
+          count: roleData.count - 1
+        })
+        .eq('id', roleData.id);
+
+      document.getElementById("result").innerHTML =
+        `🎉 ${selected} 🎉`;
+
+      loadPool();
+    }
+
+    loadPool();
+
+  </script>
+
+</body>
+</html>
